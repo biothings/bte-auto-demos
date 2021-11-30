@@ -14,6 +14,14 @@ class RouteResults {
       if (folders.length === 0) {
         res.end(JSON.stringify({ error: "No demo tests have been run yet!" }));
         return;
+      } else if (finishedResults.length === 0) {
+        res.end(
+          JSON.stringify({
+            error:
+              "First demo test is not yet complete. Please try again later.",
+          })
+        );
+        return;
       }
       let index = 0;
       // ensure most recent file is complete
