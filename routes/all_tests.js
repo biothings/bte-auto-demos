@@ -19,7 +19,7 @@ class RouteResults {
         await async.map(finishedResults, async (run) => {
           return [
             path.basename(run),
-            `http://localhost:3200/demotests/results/${path.basename(run)}`,
+            `https://dev.api.bte.ncats.io/demotests/results/${path.basename(run)}`,
           ];
         })
       );

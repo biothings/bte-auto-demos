@@ -147,7 +147,7 @@ async function waitForResponseHandle(
       response: response.response.error
         ? {
             error: response.message,
-            link: `http://localhost:3200/demotests/results/${runStamp}/${path.basename(
+            link: `https://dev.api.bte.ncats.io/demotests/results/${runStamp}/${path.basename(
               queryFile
             )}`,
           }
@@ -157,7 +157,7 @@ async function waitForResponseHandle(
             edges: Object.keys(response.response.message.knowledge_graph.edges)
               .length,
             results: response.response.message.results.length,
-            link: `http://localhost:3200/demotests/results/${runStamp}/${path.basename(
+            link: `https://dev.api.bte.ncats.io/demotests/results/${runStamp}/${path.basename(
               queryFile
             )}`,
           },
@@ -204,7 +204,7 @@ async function runDemoQueries(manual = false) {
   await async.eachSeries(demoQueries, async (queryFile) => {
     const query = JSON.parse(await fs.readFile(queryFile));
     const callbackKey = `${runStamp}-${path.basename(queryFile)}`;
-    query.callback = `http://localhost:3200/demotests/cb/${callbackKey}`;
+    query.callback = `https://dev.api.bte.ncats.io/demotests/cb/${callbackKey}`;
     const startTime = new Date();
 
     const queueResponse = await makeInitialRequest(
