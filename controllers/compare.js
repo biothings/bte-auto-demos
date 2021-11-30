@@ -19,6 +19,7 @@ export default async function compare(newer, older) {
       const comparison = {
         changed: changed,
         status: `${oldRes.status} -> ${newRes.status}`,
+        responseTime: `${oldRes.responseTime} -> ${newRes.responseTime}`,
         responseMB: `${oldRes.responseMB} -> ${newRes.responseMB}`,
         responseKB: `${oldRes.responseKB} -> ${newRes.responseKB}`,
         response: {
