@@ -1,0 +1,22 @@
+{
+  "name": "bte-auto-demos",
+  "version": "1.0.0",
+  "description": "A mini-server for automated demo query testing of the BTE dev instance",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "debug": "DEBUG=demotests* nodemon --ignore './results/*' --ignore './minihackathons/*' index.js"
+  },
+  "author": "Jackson Callaghan",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^3.2.2",
+    "axios": "^0.24.0",
+    "dateformat": "^5.0.2",
+    "debug": "^4.3.2",
+    "express": "^4.17.1",
+    "express-rate-limit": "^5.5.1",
+    "git-pull-or-clone": "^2.0.1",
+    "node-cron": "^3.0.0"
+  }
+}
