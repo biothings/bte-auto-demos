@@ -8,6 +8,11 @@ export default async function compare(newer, older) {
       const oldRes = older.summary[query];
       const newRes = newer.summary[query];
       let comparison;
+      [oldRes, newRes].forEach((res) => {
+        if (res.hasOwnProperty('trace')) {
+          res.error = "See message";
+        }
+      });
       if (oldRes.hasOwnProperty('error') && !newRes.hasOwnProperty('error')) {
         comparison = {
           changed: true,

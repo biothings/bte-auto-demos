@@ -188,7 +188,7 @@ async function waitForResponseHandle(
   } catch (error) {
     responses[path.basename(queryFile)] = {
       status: "error",
-      message: error.message,
+      error: error.message,
       trace: error.stack,
     };
   }
