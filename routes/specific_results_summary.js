@@ -13,7 +13,7 @@ class RouteResults {
       const folder = folders.find(
         (folder) => path.basename(folder) === runStamp
       );
-      if (!folder || !(await fileExists(path.resolve(oldFolder, "summary.json")))) {
+      if (!folder || !(await fileExists(path.resolve(folder, "summary.json")))) {
         res.status(404).end(
           JSON.stringify({
             error: "Specified run does not exist",
