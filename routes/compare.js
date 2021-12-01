@@ -68,7 +68,7 @@ class RouteResults {
         if (!oldFolder || !(await fileExists(path.resolve(oldFolder, "summary.json")))) {
           res.status(404).end(
             JSON.stringify({
-              error: "Specified 'old' run does not exist",
+              error: "Specified 'old' run does not exist or not complete",
             })
           );
           return;
@@ -79,7 +79,7 @@ class RouteResults {
         if (!newFolder || !(await fileExists(path.resolve(oldFolder, "summary.json")))) {
           res.status(404).end(
             JSON.stringify({
-              error: "Specified 'new' run does not exist",
+              error: "Specified 'new' run does not exist or not complete",
             })
           );
           return;

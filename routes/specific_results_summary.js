@@ -13,13 +13,19 @@ class RouteResults {
       const folder = folders.find(
         (folder) => path.basename(folder) === runStamp
       );
-      if (!folder || !(await fileExists(path.resolve(folder, "summary.json")))) {
+      if (!folder) {
         res.status(404).end(
           JSON.stringify({
             error: "Specified run does not exist",
           })
         );
-      } else {
+      } else if (!(await fileExists(path.resolve(folder, "summary.json")))) {
+        res.status(404).end(
+          JSON.stringify({
+            error: "Specified run not complete",
+          })
+        );
+      }else {
         res
           .setHeader("Content-Type", "application/json")
           .end(await fs.readFile(path.resolve(folder, "summary.json"), "utf8"));
