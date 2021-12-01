@@ -67,7 +67,7 @@ async function makeInitialRequest(runStamp, queryFile, query, responses) {
     debug(`Querying ${path.basename(queryFile)}...`);
     queueResponse = await axios({
       method: "post",
-      url: "http://localhost:3000/v1/asyncquery",
+      url: "http://localhost:3000/v1/asyncquery?caching=false",
       data: query,
       timeout: process.env.SHORT_TIMEOUT || 60 * 1000,
     });
@@ -77,6 +77,7 @@ async function makeInitialRequest(runStamp, queryFile, query, responses) {
     if (error.code === "ECONNABORTED") {
       responses[path.basename(queryFile)] = {
         status: "Initial request timed out",
+        error: "Initial request timed out"
       };
     } else {
       responses[path.basename(queryFile)] = {
