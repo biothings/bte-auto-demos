@@ -39,9 +39,9 @@ export default async function compare(newer, older) {
           responseMB: `${oldRes.responseMB} -> ${newRes.responseMB}`,
           responseKB: `${oldRes.responseKB} -> ${newRes.responseKB}`,
           response: {
-            nodes: `${oldRes.nodes} -> ${newRes.nodes}`,
-            edges: `${oldRes.edges} -> ${newRes.edges}`,
-            results: `${oldRes.results} -> ${newRes.results}`,
+            nodes: `${oldRes.response.nodes} -> ${newRes.response.nodes}`,
+            edges: `${oldRes.response.edges} -> ${newRes.response.edges}`,
+            results: `${oldRes.response.results} -> ${newRes.response.results}`,
             olderLink: oldRes.response.link,
             newerLink: newRes.response.link,
           },
