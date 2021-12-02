@@ -106,16 +106,20 @@ async function waitForResponseHandle(
   responses
 ) {
   let timedOut = false;
+  let done = false;
   setTimeout(() => {
-    debug("Request timed out from demotests side.");
-    timedOut = true;
-    callbackHandler.timeoutCallback(callbackKey);
+    if (!done) {
+      debug("Request timed out from demotests side.");
+      timedOut = true;
+      callbackHandler.timeoutCallback(callbackKey);
+    }
   }, process.env.JOB_TIMEOUT || 1000 * 60 * 60); // one hour timeout
   try {
     const response = await callbackHandler.waitForCallback(
       callbackKey,
       startTime
     );
+    done = true;
     debug(`Got query results after (${response.responseTime})s`);
     debug("Getting final status...");
     await sleep(10 * 1000);  // wait so bte can update checkStatus
@@ -191,6 +195,7 @@ async function waitForResponseHandle(
       error: error.message,
       trace: error.stack,
     };
+    done = true;
   }
 }
 
