@@ -118,6 +118,7 @@ async function waitForResponseHandle(
     );
     debug(`Got query results after (${response.responseTime})s`);
     debug("Getting final status...");
+    await sleep(10 * 1000);  // wait so bte can update checkStatus
     let closingInfo = await axios({
       method: "get",
       url: queueResponse.data.url,
@@ -139,7 +140,7 @@ async function waitForResponseHandle(
     responses[path.basename(queryFile)] = {
       status: timedOut
         ? `Timed out (demotests side, serverside status: ${closingInfo.data.state})`
-        : closingInfo.data.state === "completed"
+        : (closingInfo.data.state === "completed" && closingInfo.data.returnvalue)
           ? closingInfo.data.returnvalue.status
           : `Checkstatus did not return complete. State at last check: (${closingInfo.data.state})`,
       responseTime: response.responseTime,
@@ -180,9 +181,7 @@ async function waitForResponseHandle(
     debug(`Saving results to ${saveLocation}`);
     await fs.writeFile(
       saveLocation,
-      closingInfo.data.returnvalue
-        ? JSON.stringify(closingInfo.data)
-        : responseString,
+      responseString,
       "utf8"
     );
     debug(`Results saved.`);

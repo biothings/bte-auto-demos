@@ -15,7 +15,7 @@ const limiter = rateLimit({
 });
 
 app.use(bodyParser.json({ limit: "2gb" }));
-app.use(bodyParser.urlencoded({ limit: "2gb", extended: true }));
+app.use(bodyParser.urlencoded({ limit: "2gb", extended: true, parameterLimit: 100000 }));
 routes.setRoutes(app);
 setCron();
 
