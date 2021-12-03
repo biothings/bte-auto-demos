@@ -1,0 +1,19 @@
+
+{
+  "apps": [
+      {
+          "name": "bte-demo-tests",
+          "cwd": ".",
+          "script": "./index.js",
+        "exec_mode": "cluster",
+          "instances": 1,
+          "autorestart": true,
+          "exp_backoff_restart_delay": 100,
+          "instance_var": "INSTANCE_ID",
+          "env":{
+              "PORT": "3200",
+              "DEBUG": "demotests*"
+          }
+      }
+  ]
+}
