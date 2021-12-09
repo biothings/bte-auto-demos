@@ -22,10 +22,11 @@ class RouteResults {
         );
       } else if (!(await fileExists(path.resolve(folder, "summary.json")))) {
         const jobQueue = getJobQueue('demotests');
+        const job = await jobQueue.getJob(`demotests:${runStamp}`)
         res.status(404).end(
           JSON.stringify({
             error: "Specified run not complete",
-            status: await (await jobQueue.getJob(`demotests:${runStamp}`)).getState()
+            status: job ? await job.getState() : undefined
           })
         );
       }else {

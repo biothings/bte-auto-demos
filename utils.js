@@ -129,8 +129,8 @@ export async function getFinishedTests() {
     if (!runExists) {
       return false;
     }
-    const runCompleted = JSON.parse(await readFile(path.resolve(run, "summary.json"))).runCompleted;
-    return runCompleted;
+    const runInProgress = JSON.parse(await readFile(path.resolve(run, "summary.json"))).runInProgress;
+    return typeof runInProgress === 'undefined';
   });
   return finishedResults;
 
