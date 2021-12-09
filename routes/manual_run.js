@@ -1,34 +1,49 @@
-import { runDemoQueries } from "../controllers/demo.js";
 import authedusers from "../authedusers.js";
+import { getJobQueue } from "../controllers/jobs/job_queue.js";
+import { queueJob } from "../controllers/jobs/job.js";
+import path from "path";
+import { fileURLToPath } from "url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import runDemoQueries from "../controllers/demo.js";
 
-let active = false;
+let jobQueue = getJobQueue("demotests");
 
-class RouteCallback {
+if (jobQueue) {
+  if (process.env.FORGOT_OLD_JOBS === 'true') {
+    jobQueue.removeJobs('*');
+  }
+  jobQueue.process(runDemoQueries);
+}
+
+class RouteManualRun {
   setRoutes(app) {
     app.get("/demotests/manualrun", async (req, res, next) => {
       res.set("Conent-Type", "application/json");
-      if (active) {
-        res
-          .status(403)
-          .end(JSON.stringify({ error: `Previous manual run still in progress (ordered by ${active}).` }));
-      }
       if (!req.query.runner || !authedusers.includes(req.query.runner)) {
         res
           .status(403)
-          .end(JSON.stringify({ error: "Run must be ordered by authorized user" }));
+          .end(
+            JSON.stringify({ error: "Run must be ordered by authorized user" })
+          );
+      }
+
+      jobQueue = getJobQueue("demotests");
+      let queueData = { manual: req.query.runner };
+      let job = await queueJob(queueData, jobQueue);
+
+      if (job.error) {
+        res.end(JSON.stringify(job));
       } else {
-        try {
-          active = req.query.runner;
-          const result = await runDemoQueries(req.query.runner);
-          res.end(JSON.stringify(result));
-        } catch (error) {
-          next(error);
-        } finally {
-          active = false;
-        }
+        res.end(
+          JSON.stringify({
+            runName: job.jobId,
+            runOrderedBy: req.query.runner,
+            url: job.url,
+          })
+        );
       }
     });
   }
 }
 
-export default new RouteCallback();
+export default new RouteManualRun();

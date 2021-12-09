@@ -1,6 +1,6 @@
 import path from "path";
 import { promises as fs } from "fs";
-import { sortResultHistory, fileExists } from "../utils.js";
+import { sortResultHistory, fileExists, readFile, getFinishedTests } from "../utils.js";
 import async from "async";
 
 class RouteResults {
@@ -8,9 +8,7 @@ class RouteResults {
     app.get("/demotests/results", async (req, res, next) => {
       res.setHeader("Content-Type", "application/json");
       const folders = await sortResultHistory();
-      const finishedResults = await async.filter(folders, async (run) => {
-        return await fileExists(path.resolve(run, "summary.json"));
-      });
+      const finishedResults = await getFinishedTests();
       if (folders.length === 0) {
         res.end(JSON.stringify({ error: "No demo tests have been run yet!" }));
         return;
@@ -44,7 +42,7 @@ class RouteResults {
         return;
       }
       res.end(
-        await fs.readFile(path.resolve(finishedResults[0], "summary.json"), "utf8")
+        await readFile(path.resolve(finishedResults[0], "summary.json"))
       );
     });
   }

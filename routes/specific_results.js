@@ -1,6 +1,6 @@
 import path from "path";
 import { promises as fs } from "fs";
-import { sortResultHistory, fileExists } from "../utils.js";
+import { sortResultHistory, fileExists, readFile } from "../utils.js";
 
 class RouteResults {
   setRoutes(app) {
@@ -27,7 +27,7 @@ class RouteResults {
       } else {
         res
           .setHeader("Content-Type", "application/json")
-          .end(await fs.readFile(path.resolve(folder, file), "utf8"));
+          .end(await readFile(path.resolve(folder, file), ));
       }
     });
   }

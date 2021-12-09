@@ -1,6 +1,6 @@
 import path from "path";
 import { promises as fs } from "fs";
-import { sortResultHistory, fileExists } from "../utils.js";
+import { sortResultHistory, fileExists, readFile, getFinishedTests } from "../utils.js";
 import compare from "../controllers/compare.js";
 import async from "async";
 
@@ -9,9 +9,7 @@ class RouteResults {
     app.get("/demotests/compare", async (req, res, next) => {
       res.setHeader("Content-Type", "application/json");
       const folders = await sortResultHistory();
-      const finishedResults = await async.filter(folders, async (run) => {
-        return await fileExists(path.resolve(run, "summary.json"));
-      });
+      const finishedResults = await getFinishedTests();
       if (folders.length === 0) {
         res.end(JSON.stringify({ error: "No demo tests have been run yet!" }));
         return;
@@ -47,16 +45,10 @@ class RouteResults {
           JSON.stringify(
             await compare(
               JSON.parse(
-                await fs.readFile(
-                  path.resolve(finishedResults[0], "summary.json"),
-                  "utf8"
-                )
+                await readFile(path.resolve(finishedResults[0], "summary.json"))
               ),
               JSON.parse(
-                await fs.readFile(
-                  path.resolve(finishedResults[1], "summary.json"),
-                  "utf8"
-                )
+                await readFile(path.resolve(finishedResults[1], "summary.json"))
               )
             )
           )
@@ -65,7 +57,10 @@ class RouteResults {
         const oldFolder = folders.find(
           (folder) => path.basename(folder) === older
         );
-        if (!oldFolder || !(await fileExists(path.resolve(oldFolder, "summary.json")))) {
+        if (
+          !oldFolder ||
+          !(await fileExists(path.resolve(oldFolder, "summary.json")))
+        ) {
           res.status(404).end(
             JSON.stringify({
               error: "Specified 'old' run does not exist or not complete",
@@ -76,7 +71,10 @@ class RouteResults {
         const newFolder = folders.find(
           (folder) => path.basename(folder) === newer
         );
-        if (!newFolder || !(await fileExists(path.resolve(oldFolder, "summary.json")))) {
+        if (
+          !newFolder ||
+          !(await fileExists(path.resolve(oldFolder, "summary.json")))
+        ) {
           res.status(404).end(
             JSON.stringify({
               error: "Specified 'new' run does not exist or not complete",
@@ -88,16 +86,10 @@ class RouteResults {
           JSON.stringify(
             await compare(
               JSON.parse(
-                await fs.readFile(
-                  path.resolve(newFolder, "summary.json"),
-                  "utf8"
-                )
+                await readFile(path.resolve(newFolder, "summary.json"))
               ),
               JSON.parse(
-                await fs.readFile(
-                  path.resolve(oldFolder, "summary.json"),
-                  "utf8"
-                )
+                await readFile(path.resolve(oldFolder, "summary.json"))
               )
             )
           )

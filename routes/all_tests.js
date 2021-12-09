@@ -1,6 +1,6 @@
 import path from "path";
 import { promises as fs } from "fs";
-import { sortResultHistory, fileExists } from "../utils.js";
+import { sortResultHistory, fileExists, getFinishedTests } from "../utils.js";
 import async from "async";
 
 class RouteResults {
@@ -12,9 +12,7 @@ class RouteResults {
         res.end(JSON.stringify({ error: "No demo tests have been run yet!" }));
         return;
       }
-      const finishedResults = await async.filter(folders, async (run) => {
-        return await fileExists(path.resolve(run, "summary.json"));
-      });
+      const finishedResults = await getFinishedTests();
       const resultMap = Object.fromEntries(
         await async.map(finishedResults, async (run) => {
           return [

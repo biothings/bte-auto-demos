@@ -1,7 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import dateFormat, { masks } from "dateformat";
+import Debug from "debug";
+const debug = Debug("demotests:utils");
+import redisClient from "./controllers/redis_client.js";
 
+import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export async function findRecursive(dir, options, currentDepth = 1) {
@@ -62,11 +66,14 @@ export async function sortResultHistory() {
 }
 
 export async function fileExists(file) {
+  const unlock = await redisClient.lock(`demotest:lock:${file}`);
   try {
     const stat = await fs.stat(file);
     return true;
   } catch (error) {
     return false;
+  } finally {
+    unlock();
   }
 }
 
@@ -74,4 +81,56 @@ export async function sleep(ms) {
   return new Promise(async (resolve, reject) => {
     setTimeout(() => resolve(), ms);
   });
+}
+
+export async function getRunStamp(manual = false) {
+  const date = dateFormat(new Date(), "yyyy-mm-dd");
+  let stamp;
+  if (manual) {
+    let counter = 0;
+    while (
+      await fileExists(
+        path.resolve(__dirname, `./results/results-${date}-m${counter}`)
+      )
+    ) {
+      counter += 1;
+    }
+    stamp = `results-${date}-m${counter}`;
+  } else {
+    stamp = `results-${date}`;
+  }
+  debug(`runStamp is ${stamp}`);
+  return stamp;
+}
+
+export async function writeFile(fname, data) {
+  const unlock = await redisClient.lock(`demotest:lock:${fname}`);
+  try {
+    await fs.writeFile(fname, data, "utf8");
+  } finally {
+    unlock();
+  }
+}
+
+export async function readFile(fname) {
+  const unlock = await redisClient.lock(`demotest:lock:${fname}`);
+  try {
+    return await fs.readFile(fname);
+  } finally {
+    unlock();
+  }
+}
+
+export async function getFinishedTests() {
+  const folders = await sortResultHistory();
+  const finishedResults = await async.filter(folders, async (run) => {
+    const runExists = await fileExists(path.resolve(run, "summary.json"));
+    if (!runExists) {
+      return false;
+    }
+    const runCompleted = JSON.parse(await readFile(path.resolve(run, "summary.json"))).runCompleted;
+    return runCompleted;
+  });
+  return finishedResults;
+
 }

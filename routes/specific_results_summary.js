@@ -1,6 +1,7 @@
 import path from "path";
 import { promises as fs } from "fs";
-import { sortResultHistory, fileExists } from "../utils.js";
+import { sortResultHistory, fileExists, readFile } from "../utils.js";
+import { getJobQueue } from "../controllers/jobs/job_queue.js";
 
 class RouteResults {
   setRoutes(app) {
@@ -20,15 +21,17 @@ class RouteResults {
           })
         );
       } else if (!(await fileExists(path.resolve(folder, "summary.json")))) {
+        const jobQueue = getJobQueue('demotests');
         res.status(404).end(
           JSON.stringify({
             error: "Specified run not complete",
+            status: await (await jobQueue.getJob(`demotests:${runStamp}`)).getState()
           })
         );
       }else {
         res
           .setHeader("Content-Type", "application/json")
-          .end(await fs.readFile(path.resolve(folder, "summary.json"), "utf8"));
+          .end(await readFile(path.resolve(folder, "summary.json")));
       }
     });
   }
