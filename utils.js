@@ -4,6 +4,7 @@ import dateFormat, { masks } from "dateformat";
 import Debug from "debug";
 const debug = Debug("demotests:utils");
 import redisClient from "./controllers/redis_client.js";
+import async from "async";
 
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
