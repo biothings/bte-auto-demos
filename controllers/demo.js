@@ -271,7 +271,6 @@ async function runDemoQueries(job) {
 
   debug(`Summary saved.`);
   debug(`Job completed.`);
-  return resultSummary;
 }
 
 export default runDemoQueries;
