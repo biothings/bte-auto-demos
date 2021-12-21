@@ -62,7 +62,7 @@ async function makeInitialRequest(runStamp, queryFile, query, responses) {
       timeout: process.env.SHORT_TIMEOUT || 60 * 1000,
     });
     debug(`Query made with status (${queueResponse.status})`);
-    debug(`Initial response: ${JSON.stringify(queueResponse.data)}`);
+    debug(`Job URL: ${JSON.stringify(queueResponse.data.url)}`);
     return queueResponse;
   } catch (error) {
     if (error.code === "ECONNABORTED") {
@@ -195,6 +195,7 @@ async function waitForResponseHandle(
       status: "error",
       error: error.message,
       trace: error.stack,
+      initialResponse: queueResponse.data.url,
     };
     done = true;
   }
