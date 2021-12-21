@@ -62,6 +62,7 @@ async function makeInitialRequest(runStamp, queryFile, query, responses) {
       timeout: process.env.SHORT_TIMEOUT || 60 * 1000,
     });
     debug(`Query made with status (${queueResponse.status})`);
+    debug(`Initial response: ${JSON.stringify(queueResponse.data)}`);
     return queueResponse;
   } catch (error) {
     if (error.code === "ECONNABORTED") {
