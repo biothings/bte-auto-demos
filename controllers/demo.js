@@ -127,23 +127,44 @@ async function waitForResponseHandle(
     debug(`Got query results after (${response.responseTime})s`);
     debug("Getting final status...");
     await sleep(10 * 1000); // wait so bte can update checkStatus
-    let closingInfo = await axios({
-      method: "get",
-      url: queueResponse.data.url,
-      timeout: process.env.SHORT_TIMEOUT || 60 * 1000,
-    });
-    let remainingAttempts = 10;
-    while (closingInfo.data.state !== "completed" && remainingAttempts > 0) {
-      remainingAttempts -= 1;
-      sleep(1000);
+    let closingInfo;
+    try {
       closingInfo = await axios({
         method: "get",
         url: queueResponse.data.url,
         timeout: process.env.SHORT_TIMEOUT || 60 * 1000,
       });
+    } catch (error) {
+      closingInfo = {
+        data: {
+          state: error.response.status,
+          error: error.response.data
+        }
+      }
+    }
+    let remainingAttempts = 10;
+    while (closingInfo.data.state !== "completed" && remainingAttempts > 0) {
+      remainingAttempts -= 1;
+      sleep(1000);
+      try {
+        closingInfo = await axios({
+          method: "get",
+          url: queueResponse.data.url,
+          timeout: process.env.SHORT_TIMEOUT || 60 * 1000,
+        });
+      } catch (error) {
+        closingInfo = {
+          data: {
+            state: error.response.status,
+            error: error.response.data
+          }
+        }
+      }
     }
     debug("Status received. Assembling summary...");
-
+    if (closingInfo.data.error) {
+      debug ("Final status request failed");
+    }
     const responseString = JSON.stringify(response.response);
     responses[path.basename(queryFile)] = {
       job: queueResponse.data.url,
@@ -182,6 +203,7 @@ async function waitForResponseHandle(
                     queryFile
                   )}`,
           },
+      jobStatusError: closingInfo.data.error ? closingInfo.data.error : undefined
     };
     const saveLocation = path.resolve(
       __dirname,
