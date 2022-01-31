@@ -88,9 +88,10 @@ async function makeInitialRequest(runStamp, queryFile, query, responses) {
   }
 }
 
-async function writeSummary(runStamp, manual, responses, inProgress = false) {
+async function writeSummary(runStamp, manual, responses, annotation = undefined, inProgress = false) {
   const resultSummary = {
     runName: runStamp,
+    annotation: annotation,
     runOrderedBy: manual ? manual : "automation",
     runInProgress: inProgress ? true : undefined,
     runCompleted: inProgress ? undefined : true,
@@ -226,6 +227,7 @@ async function waitForResponseHandle(
 
 async function runDemoQueries(job) {
   const manual = job.data.manual;
+  const annotation = job.data.annotation
   const runStamp = job.id.split(":")[1];
 
   if (manual) {
@@ -289,10 +291,10 @@ async function runDemoQueries(job) {
       responses
     );
     // update parial summary
-    await writeSummary(runStamp, manual, responses, true);
+    await writeSummary(runStamp, manual, responses, annotation, true);
   });
 
-  await writeSummary(runStamp, manual, responses);
+  await writeSummary(runStamp, manual, responses, annotation);
 
   debug(`Summary saved.`);
   debug(`Job completed.`);

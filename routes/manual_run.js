@@ -28,7 +28,7 @@ class RouteManualRun {
       }
 
       jobQueue = getJobQueue("demotests");
-      let queueData = { manual: req.query.runner };
+      let queueData = { manual: req.query.runner, annotation: req.query.annotation };
       let job = await queueJob(queueData, jobQueue);
 
       if (job.error) {
@@ -38,6 +38,7 @@ class RouteManualRun {
           JSON.stringify({
             runName: job.jobId,
             runOrderedBy: req.query.runner,
+            annotation: req.query.annotation,
             url: job.url,
           })
         );
