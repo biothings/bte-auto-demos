@@ -15,7 +15,14 @@
               "DEBUG": "demotests*",
               "REDIS_HOST": "localhost",
               "REDIS_PORT": 6379
-          }
+          },
+          "env_cached":{
+            "PORT": "3200",
+            "DEBUG": "demotests*",
+            "REDIS_HOST": "localhost",
+            "REDIS_PORT": 6379,
+            "USE_CACHING": true
+        }
       }
   ]
 }
