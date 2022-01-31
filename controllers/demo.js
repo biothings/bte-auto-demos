@@ -52,12 +52,13 @@ async function makeInitialRequest(runStamp, queryFile, query, responses) {
   let queueResponse;
   try {
     debug(`Querying ${path.basename(queryFile)}...`);
+    const useCaching = process.env.USE_CACHING === 'true' ? 'true' : 'false';
     queueResponse = await axios({
       method: "post",
       url:
         process.env.DEVMODE === "true"
-          ? "http://localhost:3000/v1/asyncquery?caching=false"
-          : "https://dev.api.bte.ncats.io/v1/asyncquery?caching=false",
+          ? `http://localhost:3000/v1/asyncquery?caching=${useCaching}`
+          : `https://dev.api.bte.ncats.io/v1/asyncquery?caching=${useCaching}`,
       data: query,
       timeout: process.env.SHORT_TIMEOUT || 60 * 1000,
     });

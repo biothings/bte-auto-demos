@@ -38,11 +38,11 @@ export default [...]
 
 The server accepts a number of environment variables at runtime:
 
-`PORT`: Which port the server will listen on. Defaults to 3200.
-`JOB_TIMEOUT`: The amount of the time in ms the server will wait on a given async query before considering it timed out and moving on to the next one. Defaults to 1 hour.
-`SHORT_TIMEOUT`: The amount of time in ms the server will wait on synchronous requests (starting a query, checking query status, etc) before considering it timed out and moving on. Defaults to 1 minute.
+- `PORT`: Which port the server will listen on. Defaults to 3200.
+- `JOB_TIMEOUT`: The amount of the time in ms the server will wait on a given async query before considering it timed out and moving on to the next one. Defaults to 1 hour.
+- `SHORT_TIMEOUT`: The amount of time in ms the server will wait on synchronous requests (starting a query, checking query status, etc) before considering it timed out and moving on. Defaults to 1 minute.
+- `USE_CACHING`: Use BTE's caching feature for each query. Defaults to false.
 
 ## Running the server
 
 `npm run debug`, if you have `nodemon` installed, or simply `node index.js`.
-
