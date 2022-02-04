@@ -168,6 +168,73 @@ async function waitForResponseHandle(
       debug ("Final status request failed");
     }
     const responseString = JSON.stringify(response.response);
+    // do a sanity check: are all the nodes and edges used in the result bindings?
+    let resultSanityCheck;
+    if (!response.response.error) {
+      const nodes = new Set();
+      const edges = new Set();
+      const qNodes = new Set();
+      const qEdges = new Set();
+      const allNodes = Object.keys(response.response.message.knowledge_graph.nodes);
+      const allEdges = Object.keys(response.response.message.knowledge_graph.edges);
+      const allQNodes = Object.keys(response.response.message.query_graph.nodes);
+      const allQEdges = Object.keys(response.response.message.query_graph.edges);
+
+      response.response.message.results.forEach(res => {
+        Object.entries(res.node_bindings).forEach(([node, bindings]) => {
+          qNodes.add(node);
+          bindings.forEach(bind => nodes.add(bind.id));
+        });
+        Object.entries(res.edge_bindings).forEach(([edge, bindings]) => {
+          qEdges.add(edge);
+          bindings.forEach(bind => edges.add(bind.id));
+        });
+      });
+
+      const checkPassed = [
+        allNodes.every((node) => nodes.has(node)),
+        allEdges.every((edge) => edges.has(edge)),
+        allQNodes.every((qNode) => qNodes.has(qNode)),
+        allQEdges.every((qEdge) => qEdges.has(qEdge)),
+        allNodes.length === nodes.size,
+        allEdges.length === edges.size,
+        allQNodes.length === qNodes.size,
+        allQEdges.length === qEdges.size,
+      ].every((val) => val === true);
+
+      resultSanityCheck = {
+        checkPassed: checkPassed,
+        KGEdgesMissingFromResults: checkPassed ? undefined : allEdges
+          .filter((edge) => !edges.has(edge))
+          .map(
+            (edge) =>
+              `${edge}: ${
+                response.response.message.knowledge_graph.nodes[
+                  response.response.message.knowledge_graph.edges[edge].subject
+                ].name
+              } (${
+                response.response.message.knowledge_graph.edges[edge].subject
+              }) -> ${
+                response.response.message.knowledge_graph.edges[edge].predicate
+              } -> ${
+                response.response.message.knowledge_graph.nodes[
+                  response.response.message.knowledge_graph.edges[edge].object
+                ].name
+              } (${
+                response.response.message.knowledge_graph.edges[edge].object
+              })`
+          ),
+        KGNodesMissingFromResults: checkPassed ? undefined : allNodes
+          .filter((node) => !nodes.has(node))
+          .map(
+            (node) =>
+              `${response.response.message.knowledge_graph.nodes[node].name} (${node})`
+          ),
+        resultEdgesMissingFromKG: checkPassed ? undefined : [...edges].filter(edge => !allEdges.includes(edge)),
+        resultNodesMissingFromKG: checkPassed ? undefined : [...nodes].filter(node => !allNodes.includes(node)),
+      };
+    }
+
     responses[path.basename(queryFile)] = {
       job: queueResponse.data.url,
       status: timedOut
@@ -193,9 +260,16 @@ async function waitForResponseHandle(
         : {
             nodes: Object.keys(response.response.message.knowledge_graph.nodes)
               .length,
+            totalNodeAttributes: Object.values(
+              response.response.message.knowledge_graph.nodes
+            ).reduce((acc, node) => acc + node.attributes.length, 0),
             edges: Object.keys(response.response.message.knowledge_graph.edges)
               .length,
+            totalEdgeAttributes: Object.values(
+              response.response.message.knowledge_graph.edges
+            ).reduce((acc, edge) => acc + edge.attributes.length, 0),
             results: response.response.message.results.length,
+            resultSanityCheck: resultSanityCheck,
             link:
               process.env.DEVMODE === "true"
                 ? `http://localhost:3200/demotests/results/${runStamp}/${path.basename(
@@ -205,7 +279,9 @@ async function waitForResponseHandle(
                     queryFile
                   )}`,
           },
-      jobStatusError: closingInfo.data.error ? closingInfo.data.error : undefined
+      jobStatusError: closingInfo.data.error
+        ? closingInfo.data.error
+        : undefined,
     };
     const saveLocation = path.resolve(
       __dirname,
