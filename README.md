@@ -26,6 +26,14 @@ By default, returns a comparison of the two most recent runs. By specifying two 
 
 Orders a new manual run. A user must be supplies as a `runner` query and must be present in `authedusers.js` (e.g. `/demotests/manualrun?runner=someAuthorizedUser`). Only one manual run may occur at a time.
 
+### /demotests/inspect
+
+POST a BTE response and get a summary, much like the automated runs, but for the one response. Useful especially for the new sanity check feature.
+
+### /demotests/testquery
+
+POST a BTE query and have demotests run the query and then return a summary, as with `/demotests/inspect`. Useful if you don't have a BTE response at the ready.
+
 ## Authorized users file
 
 A file named `authedusers.js` must exist in the root directory of the server which exports an array of authorized users, using the following format:

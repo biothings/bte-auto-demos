@@ -6,7 +6,7 @@ import Debug from "debug";
 const debug = Debug("demotests:cron");
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-import runDemoQueries from "./demo.js";
+import { runDemoQueries } from "./demo.js";
 
 const jobQueue = getJobQueue("demotests");
 

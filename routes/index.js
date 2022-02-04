@@ -6,6 +6,8 @@ import routeSpecificSummary from "./specific_results_summary.js";
 import routeSpecificRun from "./specific_results.js";
 import routeAllTests from "./all_tests.js";
 import routeCompare from "./compare.js";
+import routeInspect from "./inspect.js";
+import routeTestQuery from "./testQuery.js";
 
 class Routes {
   setRoutes(app) {
@@ -17,6 +19,8 @@ class Routes {
     routeSpecificSummary.setRoutes(app);
     routeSpecificRun.setRoutes(app);
     routeCompare.setRoutes(app);
+    routeInspect.setRoutes(app);
+    routeTestQuery.setRoutes(app);
   }
 }
 

@@ -4,7 +4,7 @@ import { queueJob } from "../controllers/jobs/job.js";
 import path from "path";
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-import runDemoQueries from "../controllers/demo.js";
+import { runDemoQueries } from "../controllers/demo.js";
 
 let jobQueue = getJobQueue("demotests");
 
