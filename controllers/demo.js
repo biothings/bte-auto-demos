@@ -103,7 +103,7 @@ async function writeSummary(runStamp, manual, responses, annotation = undefined,
   );
 }
 
-export async function handleResponse(response, runStamp = undefined, queueResponse = undefined, timedOut = false, closingInfo = undefined) {
+export async function handleResponse(response, runStamp = undefined, queueResponse = undefined, timedOut = false, closingInfo = undefined, queryFile = undefined) {
   const responseString = JSON.stringify(response.response);
   // do a sanity check: are all the nodes and edges used in the result bindings?
   let resultSanityCheck;
@@ -291,7 +291,14 @@ async function waitForResponseHandle(
     }
 
 
-    responses[path.basename(queryFile)] = await handleResponse(response, runStamp, queueResponse, timedOut, closingInfo);
+    responses[path.basename(queryFile)] = await handleResponse(
+      response,
+      runStamp,
+      queueResponse,
+      timedOut,
+      closingInfo,
+      queryFile
+    );
     const saveLocation = path.resolve(
       __dirname,
       `../results/${runStamp}/${path.basename(queryFile)}`
