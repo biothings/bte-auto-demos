@@ -304,7 +304,7 @@ async function waitForResponseHandle(
       `../results/${runStamp}/${path.basename(queryFile)}`
     );
     debug(`Saving results to ${saveLocation}`);
-    await writeFile(saveLocation, responseString);
+    await writeFile(saveLocation, JSON.stringify(response.response));
     debug(`Results saved.`);
   } catch (error) {
     responses[path.basename(queryFile)] = {
