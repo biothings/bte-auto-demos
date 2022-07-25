@@ -1,5 +1,5 @@
 import { promises as fs } from "fs";
-import path from "path";
+import path, { resolve } from "path";
 import dateFormat, { masks } from "dateformat";
 import Debug from "debug";
 const debug = Debug("demotests:utils");
@@ -67,15 +67,17 @@ export async function sortResultHistory() {
 }
 
 export async function fileExists(file) {
-  const unlock = await redisClient.lock(`demotest:lock:${file}`);
-  try {
-    const stat = await fs.stat(file);
-    return true;
-  } catch (error) {
-    return false;
-  } finally {
-    unlock();
-  }
+  return new Promise(async resolve => {
+    redisClient.client.usingLock(`demotest:lock:${file}`, 600000, async (signal) => {
+      await redisClient.client.delTimeout(file);
+      try {
+        await fs.stat(file);
+        resolve(true);
+      } catch (error) {
+        resolve(false);
+      }
+    });
+  })
 }
 
 export async function sleep(ms) {
@@ -105,21 +107,30 @@ export async function getRunStamp(manual = false) {
 }
 
 export async function writeFile(fname, data) {
-  const unlock = await redisClient.lock(`demotest:lock:${fname}`);
-  try {
-    await fs.writeFile(fname, data, "utf8");
-  } finally {
-    unlock();
-  }
+  return new Promise(async resolve => {
+    redisClient.client.usingLock(`demotest:lock:${fname}`, 600000, async (signal) => {
+      await redisClient.client.delTimeout(fname);
+      try {
+        await fs.writeFile(fname, data, "utf8");
+      } finally{
+        resolve();
+      }
+    });
+  })
 }
 
 export async function readFile(fname) {
-  const unlock = await redisClient.lock(`demotest:lock:${fname}`);
-  try {
-    return await fs.readFile(fname);
-  } finally {
-    unlock();
-  }
+  return new Promise(async resolve => {
+    redisClient.client.usingLock(`demotest:lock:${fname}`, 600000, async (signal) => {
+      await redisClient.client.delTimeout(fname);
+      let fileData;
+      try {
+        fileData = await fs.readFile(fname);
+      } finally {
+        resolve(fileData);
+      }
+    });
+  })
 }
 
 export async function getFinishedTests() {
