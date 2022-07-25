@@ -1,6 +1,7 @@
 import path from "path";
 import { promises as fs } from "fs";
 import { sortResultHistory, fileExists, readFile } from "../utils.js";
+import lz4 from "lz4";
 
 class RouteResults {
   setRoutes(app) {
@@ -27,7 +28,7 @@ class RouteResults {
       } else {
         res
           .setHeader("Content-Type", "application/json")
-          .end(await readFile(path.resolve(folder, file), ));
+          .end(lz4.decode(await readFile(path.resolve(folder, file))));
       }
     });
   }
