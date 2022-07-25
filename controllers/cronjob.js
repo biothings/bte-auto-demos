@@ -32,7 +32,6 @@ export default function setCron() {
     debug("Deleting files older than 90 days")
     const oldResults = await getOldResults(90)
     oldResults.forEach(async file => {
-      debug(file)
       try {
         await deleteFile(file)
         debug(`Deleted old file: ${file}`)
