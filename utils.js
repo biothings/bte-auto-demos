@@ -135,3 +135,11 @@ export async function getFinishedTests() {
   return finishedResults;
 
 }
+
+export function fuzzyCompare(a, b, percent) {
+  if (a <= b) {
+    return b <= a*(1+percent/100)
+  } else {
+    return a <= b*(1+percent/100)
+  }
+}

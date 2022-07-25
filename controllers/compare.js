@@ -1,3 +1,5 @@
+import { fuzzyCompare } from "../utils.js";
+
 export default async function compare(newer, older) {
   const comparisonSummary = {
     newer: newer.runName,
@@ -25,8 +27,8 @@ export default async function compare(newer, older) {
       } else {
         const itemsToCheck = [
           oldRes.status === newRes.status,
-          oldRes.responseMB === newRes.responseMB,
-          oldRes.responseKB === newRes.responseKB,
+          fuzzyCompare(oldRes.responseMB, newRes.responseMB, 10),
+          fuzzyCompare(oldRes.responseKB, newRes.responseKB, 10),
           oldRes.response.nodes === newRes.response.nodes,
           oldRes.response.edges === newRes.response.edges,
           oldRes.response.results === newRes.response.results,
