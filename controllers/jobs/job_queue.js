@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export function getJobQueue(name) {
   let jobQueue = null;
-  if (Object.keys(redisClient).length !== 0) {
+  if (redisClient.clientEnabled) {
     let details = {
       port: process.env.REDIS_PORT,
       host: process.env.REDIS_HOST,
