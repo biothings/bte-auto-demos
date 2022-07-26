@@ -18,6 +18,7 @@ import Debug from "debug";
 const debug = Debug("demotests:demoRunner");
 import { fileURLToPath } from "url";
 import redisClient from "./redis_client.js";
+import lz4 from "lz4";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -304,7 +305,7 @@ async function waitForResponseHandle(
       `../results/${runStamp}/${path.basename(queryFile)}`
     );
     debug(`Saving results to ${saveLocation}`);
-    await writeFile(saveLocation, JSON.stringify(response.response));
+    await writeFile(saveLocation, lz4.encode(JSON.stringify(response.response)));
     debug(`Results saved.`);
   } catch (error) {
     responses[path.basename(queryFile)] = {

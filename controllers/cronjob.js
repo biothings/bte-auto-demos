@@ -7,6 +7,7 @@ const debug = Debug("demotests:cron");
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import { runDemoQueries } from "./demo.js";
+import { getOldResults, deleteFile } from "../utils.js"
 
 const jobQueue = getJobQueue("demotests");
 
@@ -19,7 +20,6 @@ if (jobQueue) {
 
 export default function setCron() {
   cron.schedule("0 1 * * *", () => {
-    debug("Beginning automated run of demo queries...");
     const job = queueJob({ manual: false }, jobQueue);
     if (job.error) {
       debug(`Automated run encountered error: ${job.error}`);
@@ -28,5 +28,18 @@ export default function setCron() {
       }
     }
   });
-  debug("Cron job set.");
+  cron.schedule("0 2 * * *", async () => {
+    debug("Deleting files older than 90 days")
+    const oldResults = await getOldResults(90)
+    oldResults.forEach(async file => {
+      try {
+        await deleteFile(file)
+        debug(`Deleted old file: ${file}`)
+      } catch (error) {
+        debug(`Unable to delete ${file}`)
+      }
+    })
+    debug("Completed deleting old files.");
+  })
+  debug("Cron jobs set.");
 }

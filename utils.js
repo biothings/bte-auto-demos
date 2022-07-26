@@ -154,3 +154,23 @@ export function fuzzyCompare(a, b, percent) {
     return a <= b*(1+percent/100)
   }
 }
+
+export async function getOldResults(daysOld) {
+  const excludeSummaryRegex = "^(?!.*summary\\.json).*";
+  const allResults = await findRecursive(path.resolve(__dirname, './results'), {
+    mindepth: 2,
+    maxdepth: 2,
+    matching: excludeSummaryRegex
+  });
+  const resultsWithCreationTime = await Promise.all(allResults.map(async result => ({
+    resultPath: result,
+    modifyTime: (await fs.stat(result)).mtime
+  })))
+  return resultsWithCreationTime
+    .filter(result => (new Date() - result.modifyTime)/1000/60/60/24 >= daysOld)
+    .map(result => result.resultPath)
+}
+
+export async function deleteFile(file) {
+  await fs.unlink(file)
+}
