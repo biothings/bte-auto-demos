@@ -49,7 +49,7 @@ async function makeInitialRequest(runStamp, queryFile, query, responses) {
       url:
         process.env.DEVMODE === "true"
           ? `http://localhost:3000/v1/asyncquery?caching=${useCaching}`
-          : `https://dev.api.bte.ncats.io/v1/asyncquery?caching=${useCaching}`,
+          : `https://api.bte.ncats.io/v1/asyncquery?caching=${useCaching}`,
       data: query,
       timeout: process.env.SHORT_TIMEOUT || 60 * 1000,
     });
@@ -182,7 +182,7 @@ export async function handleResponse(response, runStamp = undefined, queueRespon
               ? `http://localhost:3200/demotests/results/${runStamp}/${path.basename(
                   queryFile
                 )}`
-              : `https://dev.api.bte.ncats.io/demotests/results/${runStamp}/${path.basename(
+              : `https://api.bte.ncats.io/demotests/results/${runStamp}/${path.basename(
                   queryFile
                 )}`,
         }
@@ -204,7 +204,7 @@ export async function handleResponse(response, runStamp = undefined, queueRespon
             ? `http://localhost:3200/demotests/results/${runStamp}/${path.basename(
                 queryFile
               )}`
-            : `https://dev.api.bte.ncats.io/demotests/results/${runStamp}/${path.basename(
+            : `https://api.bte.ncats.io/demotests/results/${runStamp}/${path.basename(
                 queryFile
               )}`
           : undefined,
@@ -351,7 +351,7 @@ export async function runDemoQueries(job) {
     query.callback =
       process.env.DEVMODE === "true"
         ? `http://localhost:3200/demotests/cb/${callbackKey}`
-        : `https://dev.api.bte.ncats.io/demotests/cb/${callbackKey}`;
+        : `https://api.bte.ncats.io/demotests/cb/${callbackKey}`;
     const startTime = new Date();
 
     const queueResponse = await makeInitialRequest(

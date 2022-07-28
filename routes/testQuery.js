@@ -18,7 +18,7 @@ class RouteTestQuery {
         query.callback =
           process.env.DEVMODE === "true"
             ? `http://localhost:3200/demotests/cb/${callbackKey}`
-            : `https://dev.api.bte.ncats.io/demotests/cb/${callbackKey}`;
+            : `https://api.bte.ncats.io/demotests/cb/${callbackKey}`;
         const startTime = new Date();
         const useCaching = process.env.USE_CACHING === 'true' ? 'true' : 'false';
         const queueResponse = await axios({
@@ -26,7 +26,7 @@ class RouteTestQuery {
           url:
             process.env.DEVMODE === "true"
               ? `http://localhost:3000/v1/asyncquery?caching=${useCaching}`
-              : `https://dev.api.bte.ncats.io/v1/asyncquery?caching=${useCaching}`,
+              : `https://api.bte.ncats.io/v1/asyncquery?caching=${useCaching}`,
           data: query,
           timeout: process.env.SHORT_TIMEOUT || 60 * 1000,
         });

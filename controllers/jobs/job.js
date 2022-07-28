@@ -14,7 +14,7 @@ export async function queueJob(queueData, jobQueue) {
       const url =
         process.env.DEVMODE === "true"
           ? `http://localhost:3200/demotests/results/${runStamp}`
-          : `https://dev.api.bte.ncats.io/demotests/results/${runStamp}`;
+          : `https://api.bte.ncats.io/demotests/results/${runStamp}`;
       let job = await jobQueue.add(queueData, {
         jobId: `demotests:${runStamp}`
       });
