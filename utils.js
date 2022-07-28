@@ -68,15 +68,14 @@ export async function sortResultHistory() {
 
 export async function fileExists(file) {
   return new Promise(async resolve => {
-    redisClient.client.usingLock(`demotest:lock:${file}`, 600000, async (signal) => {
-      await redisClient.client.delTimeout(file);
-      try {
-        await fs.stat(file);
-        resolve(true);
-      } catch (error) {
-        resolve(false);
-      }
-    });
+    try {
+      await fs.stat(file);
+      resolve(true);
+    } catch (error) {
+      resolve(false);
+    }
+    // redisClient.client.usingLock(`demotest:lock:${file}`, 600000, async (signal) => {
+    // });
   })
 }
 
@@ -108,28 +107,26 @@ export async function getRunStamp(manual = false) {
 
 export async function writeFile(fname, data) {
   return new Promise(async resolve => {
-    redisClient.client.usingLock(`demotest:lock:${fname}`, 600000, async (signal) => {
-      await redisClient.client.delTimeout(fname);
-      try {
-        await fs.writeFile(fname, data, "utf8");
-      } finally{
-        resolve();
-      }
-    });
+    try {
+      await fs.writeFile(fname, data, "utf8");
+    } finally {
+      resolve();
+    }
+    // redisClient.client.usingLock(`demotest:lock:${fname}`, 600000, async (signal) => {
+    // });
   })
 }
 
 export async function readFile(fname) {
   return new Promise(async resolve => {
-    redisClient.client.usingLock(`demotest:lock:${fname}`, 600000, async (signal) => {
-      await redisClient.client.delTimeout(fname);
-      let fileData;
-      try {
-        fileData = await fs.readFile(fname);
-      } finally {
-        resolve(fileData);
-      }
-    });
+    let fileData;
+    try {
+      fileData = await fs.readFile(fname);
+    } finally {
+      resolve(fileData);
+    }
+    // redisClient.client.usingLock(`demotest:lock:${fname}`, 600000, async (signal) => {
+    // });
   })
 }
 
