@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "debug": "DEVMODE=true DEBUG=demotests* nodemon --ignore './results/*' --ignore './minihackathons/*' index.js"
+    "debug": "DEVMODE=true DEBUG=demotests* nodemon --ignore './results/*' --ignore './queries/*' index.js"
   },
   "author": "Jackson Callaghan",
   "license": "ISC",

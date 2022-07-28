@@ -16,7 +16,7 @@ By adding a `runStamp` after `/demostests/`, you may specify a specific run to r
 
 #### /demotests/:runStamp/:file
 
-You may additionally specify the file to retrieve. Files included are the run summary and results files for each query. Query files take on the corresponding name from the [december demo query file](https://github.com/NCATSTranslator/minihackathons).
+You may additionally specify the file to retrieve. Files included are the run summary and results files for each query. Query files take on the corresponding name from the queries folder.
 
 ### /demotests/compare
 
@@ -39,7 +39,7 @@ POST a BTE query and have demotests run the query and then return a summary, as 
 A file named `authedusers.js` must exist in the root directory of the server which exports an array of authorized users, using the following format:
 
 ```JavaScript
-export default [...]
+export default ["user1", "user2", ...]
 ```
 
 ## Environment Variables
