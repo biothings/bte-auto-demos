@@ -24,25 +24,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const gitPullOrClone = promisify(gitPullOrCloneNonPromise);
 
-async function updateDemoQueries() {
-  debug("Checking for updates to demo queries...");
-  await gitPullOrClone(
-    "https://github.com/NCATSTranslator/minihackathons.git",
-    path.resolve(__dirname, "../minihackathons"),
-    { depth: Infinity }
-  );
-  debug("finished updating demo queries.");
-}
-
 async function getDemoQueries() {
   const demoQueriesPath = path.resolve(
     __dirname,
-    "../minihackathons/2021-12_demo"
+    "../queries"
   );
   debug(`Reading demo queries from path (${demoQueriesPath})...`);
   const demoQueries = await findRecursive(demoQueriesPath, {
-    mindepth: 2,
-    maxdepth: 2,
+    mindepth: 1,
+    maxdepth: 1,
     matching: ".json",
   });
   debug(`Got (${demoQueries.length}) demo queries.`);
@@ -328,7 +318,6 @@ export async function runDemoQueries(job) {
   } else {
     debug("Begin automated test:\n-----");
   }
-  await updateDemoQueries();
 
   debug("Creating runStamp...");
   const demoQueries = await getDemoQueries();
